@@ -1,81 +1,82 @@
-﻿using Prism.Mvvm;
+﻿using System.Text.Json;
+using Prism.Mvvm;
 using Color = System.Windows.Media.Color;
 
 namespace AwayCCP
 {
     internal class MainViewModel : BindableBase
     {
-        private readonly Config _config;
+        private readonly IConfigRepo _configRepo;
+        private readonly IEventAggregator _eventAggregator;
         private Color _backColor;
-        private Color _fontColor;
-        private int _height;
-        private int _width;
+        private Color _foreColor;
+        private int _boxHeight;
+        private int _boxWidth;
         private int _fontSize;
 
-        public MainViewModel(Config config)
+        public MainViewModel(IConfigRepo configRepo,IEventAggregator eventAggregator)
         {
-            _config = config;
-            FontSize = config.FontSize;
+            _configRepo = configRepo;
+            _eventAggregator = eventAggregator;
+            AssignCommands();
+            _eventAggregator.GetEvent<ConfigModifiedEvent>().Subscribe((json) =>
+            {
+                IConfig config = JsonSerializer.Deserialize<Config>(json,new JsonSerializerOptions(){Converters = { new ColorJsonConverter() }})!;
+                BackColor = config.BackColor;
+                ForeColor = config.ForeColor;
+                BoxWidth = config.BoxWidth;
+                BoxHeight = config.BoxHeight;
+                FontSize = config.FontSize;
+            });
+        }
+
+        public AsyncDelegateCommand LoadedCommand { get; private set; } = null!;
+
+        public void AssignCommands()
+        {
+            LoadedCommand = new AsyncDelegateCommand(async () =>
+            {
+                IConfig config = await _configRepo.LoadAsync();
+                BackColor = config.BackColor;
+                ForeColor = config.ForeColor;
+                BoxHeight = config.BoxHeight;
+                BoxWidth = config.BoxWidth;
+                FontSize = config.FontSize;
+                //_eventAggregator.GetEvent<ConfigModifiedEvent>().Subscribe(() =>
+                //{
+                // ViewModel如何调用ViewModel的方法？
+                //});
+            });
         }
 
         public Color BackColor
         {
             get => _backColor;
-            set
-            {
-                if (SetProperty(ref _backColor, value))
-                {
-                    
-                }
-            }
+            set => SetProperty(ref _backColor, value);
         }
 
-        public Color FontColor
+        public Color ForeColor
         {
-            get => _fontColor;
-            set
-            {
-                if (SetProperty(ref _fontColor, value))
-                {
-                    
-                }
-            }
+            get => _foreColor;
+            set => SetProperty(ref _foreColor, value);
         }
 
-        public int Height
+        public int BoxHeight
         {
-            get => _height;
-            set
-            {
-                if (SetProperty(ref _height, value))
-                {
-                  
-                }
-            }
+            get => _boxHeight;
+            set => SetProperty(ref _boxHeight, value);
         }
 
-        public int Width
+        public int BoxWidth
         {
-            get => _width;
-            set
-            {
-                if (SetProperty(ref _width, value))
-                {
-                    
-                }
-            }
+            get => _boxWidth;
+            set => SetProperty(ref _boxWidth, value);
         }
 
         public int FontSize
         {
             get => _fontSize;
-            set
-            {
-                if (SetProperty(ref _fontSize, value))
-                {
-                    _config.FontSize = value;
-                }
-            }
+            set => SetProperty(ref _fontSize, value);
         }
     }
 }

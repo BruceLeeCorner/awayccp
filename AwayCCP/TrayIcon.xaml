@@ -15,6 +15,11 @@
     mc:Ignorable="d">
     <tb:TaskbarIcon.ContextMenu>
         <ContextMenu>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Loaded">
+                    <i:InvokeCommandAction Command="{Binding LoadedCommand, Mode=OneWay}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <MenuItem Header="Forecolor">
                 <xctk:ColorPicker x:Name="ForeColorPicker" SelectedColor="{Binding ForeColor}" />
             </MenuItem>
@@ -25,21 +30,26 @@
                 <xctk:IntegerUpDown
                     Maximum="50"
                     Minimum="0"
-                    Value="{Binding  FontSize}" />
+                    Value="{Binding FontSize}" />
             </MenuItem>
             <MenuItem Header="Lock" />
-            <MenuItem Header="Width">
+            <MenuItem Header="BoxWidth">
                 <xctk:IntegerUpDown
                     Maximum="5000"
                     Minimum="0"
-                    Value="{Binding  BoxWidth}" />
+                    Value="{Binding BoxWidth}" />
             </MenuItem>
-            <MenuItem Header="Height">
+            <MenuItem Header="BoxHeight">
                 <xctk:IntegerUpDown
                     Maximum="200"
                     Minimum="0"
                     Value="{Binding BoxHeight}" />
             </MenuItem>
+
+            <MenuItem Header="Show" Command="{Binding ShowTextBoxCommand}">
+            </MenuItem>
+
+
             <MenuItem Header="Blink" />
             <MenuItem Command="{Binding ExitCommand}" Header="Exit" />
         </ContextMenu>

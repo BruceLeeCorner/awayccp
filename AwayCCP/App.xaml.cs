@@ -1,11 +1,6 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using Prism.DryIoc;
-using Prism.Ioc;
-using System.Windows;
-using System.Windows.Media;
+﻿using System.ComponentModel.Design;
 using Hardcodet.Wpf.TaskbarNotification;
-using Prism.Mvvm;
+using System.Windows;
 
 namespace AwayCCP
 {
@@ -14,54 +9,33 @@ namespace AwayCCP
     /// </summary>
     public partial class App
     {
-        public TaskbarIcon TrayIcon { get; private set; }
-
-        public App()
-        {
-            Color color = Color.FromArgb(0, 0, 0, 255);
-            var json = JsonSerializer.Serialize(color, new JsonSerializerOptions()
-            {
-                Converters = { new ColorJsonConverter() }
-            });
-
-
-        }
-
-        protected override void RegisterTypes(IContainerRegistry containerRegistry)
-        {
-            containerRegistry.RegisterSingleton<Config>();
-            containerRegistry.Register<MainViewModel>();
-            containerRegistry.Register<TrayIconViewModel>();
-        }
+        public TaskbarIcon TrayIcon { get; private set; } = null!;
+        
 
         protected override Window CreateShell()
         {
-            return null;
+            var main = new MainView();
+            MainWindow = main;
+            return main;
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            TrayIcon?.Dispose();
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-
             TrayIcon = new TrayIcon();
-
-            Container.Resolve<Config>().Initialize();
-            var main = new MainView();
-            MainWindow = main;
-            main.ShowDialog();
+            Container.Resolve<IConfigRepo>().LoadAsync();
         }
 
-        protected override void OnExit(ExitEventArgs e)
+        protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            TrayIcon.Dispose();
-            base.OnExit(e);
-            Container.Resolve<Config>().Terminate();
+            containerRegistry.RegisterSingleton<IConfigRepo, FileConfigRepo>();
+            containerRegistry.Register<TrayIconViewModel>();
+            containerRegistry.Register<MainViewModel>();
         }
-
-        //protected override void ConfigureViewModelLocator()
-        //{
-        //    base.ConfigureViewModelLocator();
-        //    ViewModelLocationProvider.SetDefaultViewModelFactory(viewModelType => Container.Resolve(viewModelType));
-        //}
     }
 }

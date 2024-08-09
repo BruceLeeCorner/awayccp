@@ -22,6 +22,7 @@ namespace AwayCCP
     {
 
         private bool IsLocked=true;
+
         public MainView()
         {
             InitializeComponent();
@@ -41,6 +42,18 @@ namespace AwayCCP
             IsLocked = !IsLocked;
         }
 
+        private void MainView_OnInitialized(object? sender, EventArgs e)
+        {
+            (Application.Current as PrismApplication)!.Container.Resolve<IEventAggregator>().GetEvent<ShowTextBoxEvent>()
+                .Subscribe(
+                    () =>
+                    {
+                        this.Focus();
+                        this.TextBox.Focus();
+                        Keyboard.Focus(this.TextBox);
+                        this.Show();
+                    });
+        }
     }
 
 

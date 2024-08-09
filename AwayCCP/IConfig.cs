@@ -14,8 +14,5 @@ namespace AwayCCP
         int FontSize { get; set; }
         int BoxWidth { get; set; }
         int BoxHeight { get; set; }
-
-        void Load();
-        void Save();
     }
 }
