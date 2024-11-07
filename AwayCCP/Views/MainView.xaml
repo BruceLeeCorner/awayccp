@@ -1,0 +1,62 @@
+﻿<Window
+    x:Class="AwayCCP.Views.MainView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:AwayCCP"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="http://prismlibrary.com/"
+    xmlns:vm="clr-namespace:AwayCCP.ViewModels"
+    xmlns:xceed="http://schemas.xceed.com/wpf/xaml/toolkit"
+    Name="Top"
+    Title="MainView"
+    Height="0"
+    d:DataContext="{d:DesignInstance vm:MainViewModel}"
+    d:DesignHeight="20"
+    prism:ViewModelLocator.AutoWireViewModel="True"
+    AllowsTransparency="True"
+    BorderThickness="0"
+    Initialized="MainView_OnInitialized"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    SizeToContent="WidthAndHeight"
+    Topmost="True"
+    WindowStyle="None"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <local:Color2BrushConverter x:Key="Color2BrushConverter" />
+        <local:NullableColorConverter x:Key="NullableColorConverter" />
+        <local:BindingProxy x:Key="BindingProxy" Data="{Binding ElementName=Top}" />
+    </Window.Resources>
+    <Grid Name="Self">
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="Loaded">
+                <i:CallMethodAction MethodName="LoadConfigs" TargetObject="{Binding ElementName=Self, Path=DataContext}" />
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
+        <Border BorderBrush="Aquamarine" BorderThickness="0">
+            <TextBox
+                x:Name="TextBox"
+                Width="{Binding BoxWidth}"
+                Height="{Binding BoxHeight}"
+                d:Background="DarkGray"
+                AcceptsReturn="True"
+                Background="{Binding Path=BackColor, Converter={StaticResource Color2BrushConverter}}"
+                BorderThickness="0"
+                FontFamily="Times New Roman"
+                FontSize="{Binding FontSize}"
+                Foreground="{Binding Path=ForeColor, Converter={StaticResource Color2BrushConverter}}"
+                PreviewMouseLeftButtonDown="TextBox_OnPreviewMouseLeftButtonDown"
+                TextWrapping="Wrap" >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewTextInput">
+                        <i:CallMethodAction MethodName="TextInput" TargetObject="{Binding ElementName=Self, Path=DataContext}">
+                            
+                        </i:CallMethodAction>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+        </Border>
+    </Grid>
+</Window>

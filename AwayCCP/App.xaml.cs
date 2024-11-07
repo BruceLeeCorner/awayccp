@@ -1,6 +1,10 @@
 ﻿using System.ComponentModel.Design;
 using Hardcodet.Wpf.TaskbarNotification;
 using System.Windows;
+using Prism.Ioc;
+using AwayCCP.ViewModels;
+using AwayCCP.Services;
+using AwayCCP.Views;
 
 namespace AwayCCP
 {
@@ -33,9 +37,22 @@ namespace AwayCCP
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.RegisterSingleton<IConfigRepo, FileConfigRepo>();
+            RegisterViewModel(containerRegistry);
+            RegisterService(containerRegistry);
+            containerRegistry.RegisterDialog<DefaultDialogView>("dialog");
+        }
+
+       private void RegisterViewModel(IContainerRegistry containerRegistry)
+        {
             containerRegistry.Register<TrayIconViewModel>();
             containerRegistry.Register<MainViewModel>();
         }
+
+        private void RegisterService(IContainerRegistry containerRegistry)
+        {
+            containerRegistry.RegisterSingleton<IConfigRepo, FileConfigRepo>();
+            containerRegistry.RegisterSingleton<ISentenceManager, SentenceManager>();
+        }
+
     }
 }

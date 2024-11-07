@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Windows.Media;
 
-namespace AwayCCP;
+namespace AwayCCP.Services;
 
 public class FileConfigRepo : IConfigRepo
 {

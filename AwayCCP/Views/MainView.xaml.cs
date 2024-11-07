@@ -13,7 +13,7 @@ using System.Windows.Shapes;
 using Prism.Mvvm;
 using Path = System.IO.Path;
 
-namespace AwayCCP
+namespace AwayCCP.Views
 {
     /// <summary>
     /// Interaction logic for MainView.xaml

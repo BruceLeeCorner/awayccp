@@ -10,16 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AwayCCP
+namespace AwayCCP.Views
 {
     /// <summary>
-    /// Interaction logic for TrayIcon.xaml
+    /// Interaction logic for DefaultDialogView.xaml
     /// </summary>
-    public partial class TrayIcon
+    public partial class DefaultDialogView : UserControl
     {
-        public TrayIcon()
+        public DefaultDialogView()
         {
             InitializeComponent();
         }

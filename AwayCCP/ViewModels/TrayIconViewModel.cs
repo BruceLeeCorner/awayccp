@@ -1,17 +1,21 @@
-﻿using System.Text.Json;
+﻿using AwayCCP.Services;
+using Prism.Dialogs;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Media;
 
-namespace AwayCCP
+namespace AwayCCP.ViewModels
 {
     public class TrayIconViewModel : BindableBase
     {
         #region Constructors
 
-        public TrayIconViewModel(IConfigRepo configRepo, IEventAggregator eventAggregator)
+        public TrayIconViewModel(IConfigRepo configRepo, IEventAggregator eventAggregator, ISentenceManager sentenceManager, IDialogService dialogService)
         {
             _configRepo = configRepo;
             _eventAggregator = eventAggregator;
+            this.sentenceManager = sentenceManager;
+            this.dialogService = dialogService;
             AssignCommands();
         }
 
@@ -21,6 +25,8 @@ namespace AwayCCP
 
         private readonly IConfigRepo _configRepo;
         private readonly IEventAggregator _eventAggregator;
+        private readonly ISentenceManager sentenceManager;
+        private readonly IDialogService dialogService;
         private Color _backColor;
         private int _boxHeight;
         private int _boxWidth;
@@ -39,6 +45,7 @@ namespace AwayCCP
         public DelegateCommand ForeColorCommand { get; private set; } = null!;
         public AsyncDelegateCommand LoadedCommand { get; private set; } = null!;
         public DelegateCommand ShowTextBoxCommand { get; private set; } = null!;
+        public DelegateCommand<string> LoadFileCommand { get; private set; } = null!;
         #endregion Commands
 
         public Color BackColor
@@ -131,17 +138,29 @@ namespace AwayCCP
                 RaisePropertyChanged(nameof(BoxHeight));
                 RaisePropertyChanged(nameof(BoxWidth));
             });
+
+            LoadFileCommand = new DelegateCommand<string>((path) =>
+            {
+                sentenceManager.Load(path);
+            }).Catch<Exception>(e =>
+            {
+                var @params = new DialogParameters
+                {
+                    { "content", e.Message }
+                };
+                dialogService.Show("dialog", @params, null);
+            });
         }
 
         private async Task SaveAndNotifyAfterConfigModified()
         {
             var config = new Config()
             {
-                ForeColor = this.ForeColor,
-                FontSize = this.FontSize,
-                BackColor = this.BackColor,
-                BoxWidth = this.BoxWidth,
-                BoxHeight = this.BoxHeight,
+                ForeColor = ForeColor,
+                FontSize = FontSize,
+                BackColor = BackColor,
+                BoxWidth = BoxWidth,
+                BoxHeight = BoxHeight,
             };
             var t = _configRepo.SaveAsync(config);
             string json = JsonSerializer.Serialize(config, new JsonSerializerOptions()

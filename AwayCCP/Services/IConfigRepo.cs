@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AwayCCP
+namespace AwayCCP.Services
 {
     public interface IConfigRepo
     {
